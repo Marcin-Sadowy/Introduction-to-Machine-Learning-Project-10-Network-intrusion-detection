@@ -1,1 +1,5 @@
 # Introduction-to-Machine-Learning-Project-10-Network-intrusion-detection
+
+Decide from the statistics of a network connection (duration, bytes and packets exchanged, protocol, service, timing between packets) whether it is normal traffic or one of several attack types. Attack classes are very unevenly represented, and some are easily confused with normal traffic or with each other. Teams must choose which features carry real signal, decide how to evaluate when missing an attack is costlier than a false alarm, and check whether a model trained on one part of the data still works on traffic that looks different.
+
+Datasets: UNSW-NB15 (the official training and testing partition files, or the full four-file release from UNSW Canberra), optionally CIC-IDS2017 as a second dataset for a generalisation check.
