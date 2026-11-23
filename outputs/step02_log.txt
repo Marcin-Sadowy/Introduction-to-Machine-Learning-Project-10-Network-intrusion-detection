@@ -1,0 +1,36 @@
+
+================================================================================
+STEP 2 - Cleaning & split
+================================================================================
+2a. dropped 'id'; service '-' -> 'none'
+2b. share where is_ftp_login == ct_ftp_cmd: 1.00000 -> dropping is_ftp_login, stcpb, dtcpb
+
+2d. train deduplication: 175341 -> 101040 rows
+                before  after  kept_%
+attack_cat                           
+Normal           56000  51710    92.3
+Generic          40000   3904     9.8
+Exploits         33393  19326    57.9
+Fuzzers          18184  14791    81.3
+DoS              12264   3009    24.5
+Reconnaissance   10491   6213    59.2
+Analysis          2000    467    23.4
+Backdoor          1746    417    23.9
+Shellcode         1133   1086    95.9
+Worms              130    117    90.0
+
+2e. final sets: train=(80832, 41), val=(20208, 41), test=(82332, 41)
+                train    val  test(official)
+attack_cat                                  
+Normal          41368  10342           37000
+Exploits        15461   3865           11132
+Fuzzers         11833   2958            6062
+Reconnaissance   4970   1243            3496
+Generic          3123    781           18871
+DoS              2407    602            4089
+Shellcode         869    217             378
+Analysis          373     94             677
+Backdoor          334     83             583
+Worms              94     23              44
+  [plot saved] plots/step02_deduplication.png
+  [plot saved] plots/step02_split_composition.png

@@ -1,0 +1,113 @@
+================================================================================
+DEDICATED INFORMATION GAIN ANALYSIS (CLEAN, DEDUP, COMBINED, ACTIVE-AWARE)
+================================================================================
+1. Leaks removed : ['id', 'is_ftp_login', 'stcpb', 'dtcpb'] + attack_cat kept strictly as target
+2. Deduplicated  : 175,341 -> 101,040 unique rows | train fold = 80,832
+   Baseline attack rate in train fold: 0.488
+
+3. Correlated numeric pairs BEFORE combining (|rho| >= 0.90): 14
+  feature_1        feature_2  spearman_rho
+trans_depth ct_flw_http_mthd        0.9993
+     tcprtt           synack        0.9882
+       swin             dwin        0.9845
+     tcprtt           ackdat        0.9760
+      dpkts           dbytes        0.9627
+      dpkts            dloss        0.9620
+       rate           sinpkt       -0.9596
+      spkts            sloss        0.9544
+     dbytes            dloss        0.9444
+     synack           ackdat        0.9419
+     sinpkt             sjit        0.9376
+       rate            sload        0.9357
+      spkts            dpkts        0.9313
+      sload           sinpkt       -0.9161
+
+   Dropped 12 collinear twins -> 35 numeric + 3 categorical features
+   Remaining pairs with |rho| >= 0.90 AFTER combining: 6
+     feature_1       feature_2  spearman_rho
+byte_log_ratio  load_log_ratio        0.9933
+byte_log_ratio   mean_pkt_diff        0.9896
+load_log_ratio   mean_pkt_diff        0.9819
+        sbytes total_bytes_log        0.9028
+         dmean  byte_log_ratio       -0.9022
+         spkts total_bytes_log        0.9003
+  [plot saved] plots/ig_analysis_correlation_before_after.png
+
+4. Full Information Gain Table (Global vs Active-Only):
+                   IG_global  IG_active_only  active_%  n_active  P(attack|active)  IG_gain_if_active
+feature                                                                                              
+mean_pkt_diff        0.47538         0.47538      99.6     80489             0.487            0.00000
+byte_log_ratio       0.46708         0.46708     100.0     80817             0.488            0.00000
+load_log_ratio       0.45952         0.45960      99.5     80415             0.490            0.00008
+total_bytes_log      0.45442         0.45442     100.0     80832             0.488            0.00000
+sbytes               0.45122         0.45122     100.0     80832             0.488            0.00000
+dbytes               0.41479         0.45455      85.7     69308             0.441            0.03976
+sttl                 0.39683         0.39579      99.4     80310             0.491           -0.00104
+ct_state_ttl         0.38747         0.03114      60.7     49081             0.799           -0.35634
+dttl                 0.38341         0.41632      85.7     69233             0.442            0.03291
+pkt_log_ratio        0.32924         0.36449      82.4     66599             0.542            0.03524
+dmean                0.32556         0.34913      85.7     69308             0.441            0.02357
+rate                 0.30233         0.30233      99.5     80437             0.490            0.00000
+tcprtt               0.30067         0.40336      74.7     60377             0.502            0.10269
+dinpkt               0.29547         0.31256      85.7     69299             0.441            0.01709
+smean                0.28876         0.28876     100.0     80832             0.488            0.00000
+dur                  0.27077         0.27077      99.5     80451             0.490            0.00000
+synack_rtt_share     0.26134         0.34789      74.7     60377             0.502            0.08655
+dload                0.25611         0.26573      85.7     69301             0.441            0.00962
+sloss_per_pkt        0.23796         0.31765      75.3     60843             0.498            0.07969
+sjit                 0.20860         0.26651      78.0     63016             0.487            0.05791
+dloss_per_pkt        0.20388         0.27462      74.5     60222             0.501            0.07074
+spkts                0.16569         0.16569     100.0     80832             0.488            0.00000
+ct_dst_ltm           0.15042         0.15042     100.0     80832             0.488            0.00000
+jit_log_ratio        0.14119         0.17799      79.3     64136             0.479            0.03680
+ct_srv_dst           0.13105         0.13105     100.0     80832             0.488            0.00000
+ct_src_ltm           0.11701         0.11701     100.0     80832             0.488            0.00000
+ct_srv_src           0.09420         0.09420     100.0     80832             0.488            0.00000
+state                0.09306         0.09306     100.0     80832             0.488            0.00000
+ct_dst_src_ltm       0.06824         0.06824     100.0     80832             0.488            0.00000
+response_body_len    0.05751         0.53519      10.6      8588             0.579            0.47768
+service              0.05217         0.10925      42.2     34091             0.553            0.05709
+ct_dst_sport_ltm     0.03624         0.03624     100.0     80832             0.488            0.00000
+http_activity        0.02081         0.00331      16.9     13682             0.709           -0.01750
+ct_src_dport_ltm     0.01899         0.01899     100.0     80832             0.488            0.00000
+proto                0.01523         0.01523     100.0     80832             0.488            0.00000
+is_sm_ips_ports      0.00360         0.00000       0.5       433             0.000           -0.00360
+tcp_window_active    0.00059         0.00000      75.3     60871             0.498           -0.00059
+ct_ftp_cmd           0.00000         0.00813       1.9      1504             0.487            0.00813
+
+── Top 5 Most Informative (Global IG) ──
+                 IG_global  IG_active_only  active_%  n_active  P(attack|active)  IG_gain_if_active
+feature                                                                                            
+mean_pkt_diff      0.47538         0.47538      99.6     80489             0.487            0.00000
+byte_log_ratio     0.46708         0.46708     100.0     80817             0.488            0.00000
+load_log_ratio     0.45952         0.45960      99.5     80415             0.490            0.00008
+total_bytes_log    0.45442         0.45442     100.0     80832             0.488            0.00000
+sbytes             0.45122         0.45122     100.0     80832             0.488            0.00000
+
+── Top 5 Least Informative (Global IG) ──
+                   IG_global  IG_active_only  active_%  n_active  P(attack|active)  IG_gain_if_active
+feature                                                                                              
+ct_src_dport_ltm     0.01899         0.01899     100.0     80832             0.488            0.00000
+proto                0.01523         0.01523     100.0     80832             0.488            0.00000
+is_sm_ips_ports      0.00360         0.00000       0.5       433             0.000           -0.00360
+tcp_window_active    0.00059         0.00000      75.3     60871             0.498           -0.00059
+ct_ftp_cmd           0.00000         0.00813       1.9      1504             0.487            0.00813
+
+── Sparse / Conditionally Active Features (<85% active): Global vs Active-Only IG ──
+                   IG_global  IG_active_only  active_%  n_active  P(attack|active)  IG_gain_if_active
+feature                                                                                              
+response_body_len    0.05751         0.53519      10.6      8588             0.579            0.47768
+tcprtt               0.30067         0.40336      74.7     60377             0.502            0.10269
+pkt_log_ratio        0.32924         0.36449      82.4     66599             0.542            0.03524
+synack_rtt_share     0.26134         0.34789      74.7     60377             0.502            0.08655
+sloss_per_pkt        0.23796         0.31765      75.3     60843             0.498            0.07969
+dloss_per_pkt        0.20388         0.27462      74.5     60222             0.501            0.07074
+sjit                 0.20860         0.26651      78.0     63016             0.487            0.05791
+jit_log_ratio        0.14119         0.17799      79.3     64136             0.479            0.03680
+service              0.05217         0.10925      42.2     34091             0.553            0.05709
+ct_state_ttl         0.38747         0.03114      60.7     49081             0.799           -0.35634
+ct_ftp_cmd           0.00000         0.00813       1.9      1504             0.487            0.00813
+http_activity        0.02081         0.00331      16.9     13682             0.709           -0.01750
+is_sm_ips_ports      0.00360         0.00000       0.5       433             0.000           -0.00360
+tcp_window_active    0.00059         0.00000      75.3     60871             0.498           -0.00059
+  [plot saved] plots/ig_analysis_global_vs_active.png

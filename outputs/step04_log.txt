@@ -1,0 +1,94 @@
+
+================================================================================
+STEP 4 - Categorical encoding
+================================================================================
+
+proto (133 categories, top 10):
+            n  attack_rate  share_%
+proto                              
+tcp     60871        0.498   75.306
+udp     18214        0.438   22.533
+arp       509        0.000    0.630
+unas      389        1.000    0.481
+ospf      157        0.688    0.194
+sctp       53        1.000    0.066
+any        15        1.000    0.019
+igmp       12        0.000    0.015
+ipv6       11        1.000    0.014
+mobile     10        1.000    0.012
+
+service (13 categories, top 10):
+              n  attack_rate  share_%
+service                              
+none      46741        0.441   57.825
+http      14389        0.714   17.801
+dns        8799        0.341   10.886
+smtp       4042        0.688    5.000
+ftp-data   2630        0.219    3.254
+ftp        2153        0.549    2.664
+ssh        1047        0.010    1.295
+pop3        881        0.997    1.090
+snmp         45        1.000    0.056
+ssl          45        1.000    0.056
+
+state (6 categories, top 10):
+           n  attack_rate  share_%
+state                             
+FIN    59402        0.508   73.488
+INT    10881        0.806   13.461
+CON     9841        0.039   12.175
+REQ      633        0.177    0.783
+RST       66        0.152    0.082
+ECO        9        0.000    0.011
+  [plot saved] plots/step04_proto_analysis.png
+  [plot saved] plots/step04_service_state_mix.png
+
+-- 4b. Running encoder comparison on validation split (22 fits)... --
+  cat_only | logreg | onehot_full          | cols=152 | macroF1=0.240 recall=0.976 FAR=0.669 (10.9s)
+  cat_only | logreg | onehot_min0.1%       | cols= 20 | macroF1=0.251 recall=0.976 FAR=0.670 (4.4s)
+  cat_only | logreg | onehot_min0.5%       | cols= 18 | macroF1=0.235 recall=0.976 FAR=0.670 (4.7s)
+  cat_only | logreg | domain_onehot        | cols= 27 | macroF1=0.254 recall=0.976 FAR=0.669 (7.5s)
+  cat_only | logreg | frequency            | cols=  3 | macroF1=0.147 recall=0.998 FAR=0.970 (1.3s)
+  cat_only | logreg | target(cross-fit)    | cols= 30 | macroF1=0.261 recall=0.976 FAR=0.669 (10.6s)
+  cat_only | hgb    | ordinal              | cols=  3 | macroF1=0.248 recall=0.976 FAR=0.669 (4.4s)
+  cat_only | hgb    | native_categorical   | cols=  3 | macroF1=0.243 recall=0.976 FAR=0.670 (1.9s)
+  cat_only | hgb    | frequency            | cols=  3 | macroF1=0.256 recall=0.976 FAR=0.669 (4.8s)
+  cat_only | hgb    | target(cross-fit)    | cols= 30 | macroF1=0.279 recall=0.976 FAR=0.669 (3.8s)
+  cat_only | hgb    | onehot_min0.5%       | cols= 18 | macroF1=0.238 recall=0.976 FAR=0.669 (7.5s)
+  cat+num  | logreg | onehot_full          | cols=152 | macroF1=0.473 recall=0.998 FAR=0.196 (17.5s)
+  cat+num  | logreg | onehot_min0.1%       | cols= 20 | macroF1=0.481 recall=0.998 FAR=0.197 (12.2s)
+  cat+num  | logreg | onehot_min0.5%       | cols= 18 | macroF1=0.479 recall=0.998 FAR=0.196 (11.7s)
+  cat+num  | logreg | domain_onehot        | cols= 27 | macroF1=0.481 recall=0.998 FAR=0.195 (11.6s)
+  cat+num  | logreg | frequency            | cols=  3 | macroF1=0.470 recall=0.999 FAR=0.198 (9.8s)
+  cat+num  | logreg | target(cross-fit)    | cols= 30 | macroF1=0.480 recall=0.998 FAR=0.197 (12.7s)
+  cat+num  | hgb    | ordinal              | cols=  3 | macroF1=0.679 recall=0.995 FAR=0.176 (4.0s)
+  cat+num  | hgb    | native_categorical   | cols=  3 | macroF1=0.680 recall=0.996 FAR=0.176 (4.2s)
+  cat+num  | hgb    | frequency            | cols=  3 | macroF1=0.682 recall=0.995 FAR=0.175 (3.9s)
+  cat+num  | hgb    | target(cross-fit)    | cols= 30 | macroF1=0.692 recall=0.996 FAR=0.178 (5.9s)
+  cat+num  | hgb    | onehot_min0.5%       | cols= 18 | macroF1=0.681 recall=0.995 FAR=0.173 (5.7s)
+
+-- 4b. Encoder comparison summary --
+    mode  model           encoding  n_cat_cols  macro_f1  attack_recall  false_alarm  seconds
+ cat+num    hgb  target(cross-fit)          30     0.692          0.996        0.178      5.9
+ cat+num    hgb          frequency           3     0.682          0.995        0.175      3.9
+ cat+num    hgb     onehot_min0.5%          18     0.681          0.995        0.173      5.7
+ cat+num    hgb native_categorical           3     0.680          0.996        0.176      4.2
+ cat+num    hgb            ordinal           3     0.679          0.995        0.176      4.0
+ cat+num logreg     onehot_min0.1%          20     0.481          0.998        0.197     12.2
+ cat+num logreg      domain_onehot          27     0.481          0.998        0.195     11.6
+ cat+num logreg  target(cross-fit)          30     0.480          0.998        0.197     12.7
+ cat+num logreg     onehot_min0.5%          18     0.479          0.998        0.196     11.7
+ cat+num logreg        onehot_full         152     0.473          0.998        0.196     17.5
+ cat+num logreg          frequency           3     0.470          0.999        0.198      9.8
+cat_only    hgb  target(cross-fit)          30     0.279          0.976        0.669      3.8
+cat_only    hgb          frequency           3     0.256          0.976        0.669      4.8
+cat_only    hgb            ordinal           3     0.248          0.976        0.669      4.4
+cat_only    hgb native_categorical           3     0.243          0.976        0.670      1.9
+cat_only    hgb     onehot_min0.5%          18     0.238          0.976        0.669      7.5
+cat_only logreg  target(cross-fit)          30     0.261          0.976        0.669     10.6
+cat_only logreg      domain_onehot          27     0.254          0.976        0.669      7.5
+cat_only logreg     onehot_min0.1%          20     0.251          0.976        0.670      4.4
+cat_only logreg        onehot_full         152     0.240          0.976        0.669     10.9
+cat_only logreg     onehot_min0.5%          18     0.235          0.976        0.670      4.7
+cat_only logreg          frequency           3     0.147          0.998        0.970      1.3
+  [plot saved] plots/step04_encoder_comparison.png

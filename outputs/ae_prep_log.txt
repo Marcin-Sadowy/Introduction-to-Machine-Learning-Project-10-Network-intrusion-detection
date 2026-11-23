@@ -1,0 +1,33 @@
+================================================================================
+PREPARING FINAL DATASET FOR AUTOENCODER MODELING
+================================================================================
+1. Loaded & cleaned splits (leaks dropped: ['id', 'is_ftp_login', 'stcpb', 'dtcpb'])
+   raw train: 175,341 -> dedup: 101,040 -> train: 80,832 | val: 20,208
+   official test (untouched): 82,332
+
+2. Transformed features for Autoencoder:
+   numeric cols: 37 (20 log1p-transformed, scaled on Normal train)
+   compact OHE : 18 cols (min_frequency=0.005, kept in [0, 1])
+   total input : 55 features
+
+3. Running sanity checks:
+   [OK] X_train_all  shape=(80832, 55)    | NaN=0 | Inf=0
+   [OK] X_val        shape=(20208, 55)    | NaN=0 | Inf=0
+   [OK] X_test       shape=(82332, 55)    | NaN=0 | Inf=0
+   [OK] Zero leak columns in feature matrix
+   [OK] OHE active on 100% of train/val/test rows (each row sums to 3)
+   [OK] Normal-only train scaling: max |mean|=0.0000, max std=1.0000
+   [INFO] Mean |z-score| on validation: Normal=0.715 vs Attack=0.998
+  [plot saved] plots/ae_dataset_overview.png
+
+4. Exporting files to dataset/autoencoder_ready/:
+   [saved] X_train_normal.csv   shape=(41368, 55)
+   [saved] X_train_all.csv      shape=(80832, 55)
+   [saved] y_train_all.csv      shape=(80832, 2)
+   [saved] X_val.csv            shape=(20208, 55)
+   [saved] y_val.csv            shape=(20208, 2)
+   [saved] X_test.csv           shape=(82332, 55)
+   [saved] y_test.csv           shape=(82332, 2)
+   [saved] preprocessor.pkl     (scaler, OHE, log_cols, feature_names)
+
+Done! Ready for Autoencoder training on X_train_normal.csv.

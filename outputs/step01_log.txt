@@ -1,0 +1,110 @@
+
+================================================================================
+STEP 1 - Raw data audit
+================================================================================
+train shape: (175341, 45)
+test  shape: (82332, 45)
+same columns in same order: True
+
+-- 1a. Column dtypes --
+int64      30
+float64    11
+object      4
+object (categorical) columns: ['proto', 'service', 'state', 'attack_cat']
+
+-- 1b. Missing values (NaN) --
+train total NaN: 0 | test total NaN: 0
+  'service' has '-' placeholder: train=94168 (53.7%), test=47153 (57.3%)
+
+-- 1c. Duplicates (ignoring 'id') --
+exact duplicate rows  train: 67601 (38.6%)  test: 26387 (32.0%)
+train feature-vectors mapped to >1 attack_cat: 1772
+train feature-vectors mapped to both label 0 and 1: 229
+test rows also appearing in train: 8541 (10.4%)
+train rows involved in duplication, by attack_cat:
+attack_cat
+Generic           38925
+Exploits          16460
+DoS                9754
+Normal             5908
+Reconnaissance     3734
+Fuzzers            3349
+Analysis            647
+Backdoor            344
+Shellcode            77
+Worms                 6
+
+-- 1d. Class balance --
+label (0=normal, 1=attack) proportions:
+        train   test
+label              
+1      0.681  0.551
+0      0.319  0.449
+                train_n  test_n  train_%  test_%
+attack_cat                                      
+Normal            56000   37000    31.94   44.94
+Generic           40000   18871    22.81   22.92
+Exploits          33393   11132    19.04   13.52
+Fuzzers           18184    6062    10.37    7.36
+DoS               12264    4089     6.99    4.97
+Reconnaissance    10491    3496     5.98    4.25
+Analysis           2000     677     1.14    0.82
+Backdoor           1746     583     1.00    0.71
+Shellcode          1133     378     0.65    0.46
+Worms               130      44     0.07    0.05
+imbalance ratio (largest/smallest, train): 430.8
+
+-- 1e. Categorical features --
+proto    train unique= 133 test unique= 131 | only-in-test=[] | <0.1% rows=118
+service  train unique=  13 test unique=  13 | only-in-test=[] | <0.1% rows=5
+state    train unique=   9 test unique=   7 | only-in-test=['ACC', 'CLO'] | <0.1% rows=5
+
+-- 1f. Is 'id' a leak? --
+id is 1..n in train: True
+correlation(id, label) train: 0.727
+
+-- 1g. Numeric feature summary (train) --
+                    min            50%           max  n_unique  zero_%    skew
+dur                 0.0       0.001582  5.999999e+01     74039     1.5    7.50
+spkts               1.0       2.000000  9.616000e+03       480     0.0   40.22
+dpkts               0.0       2.000000  1.097400e+04       443    48.1   36.76
+sbytes             28.0     430.000000  1.296523e+07      7214     0.0   45.30
+dbytes              0.0     164.000000  1.465555e+07      6660    48.1   39.76
+rate                0.0    3225.806520  1.000000e+06     76991     1.7    3.32
+sttl                0.0     254.000000  2.550000e+02        11     1.8   -0.68
+dttl                0.0      29.000000  2.540000e+02         6    48.1    0.90
+sload               0.0  879674.750000  5.988000e+09     80885     1.7    8.70
+dload               0.0    1447.022705  2.242273e+07     77474    48.1    4.69
+sloss               0.0       0.000000  4.803000e+03       409    54.4   44.75
+dloss               0.0       0.000000  5.484000e+03       370    55.1   41.38
+sinpkt              0.0       0.279733  8.437150e+04     76161     0.3    7.92
+dinpkt              0.0       0.006000  5.671682e+04     74245    48.1   29.68
+sjit                0.0       0.000000  1.460480e+06     77532    50.5   17.65
+djit                0.0       0.000000  2.893883e+05     76831    53.5   29.54
+swin                0.0       0.000000  2.550000e+02        13    54.4    0.18
+stcpb               0.0       0.000000  4.294959e+09     75265    54.9    1.08
+dtcpb               0.0       0.000000  4.294882e+09     75089    54.9    1.08
+dwin                0.0       0.000000  2.550000e+02         7    54.9    0.20
+tcprtt              0.0       0.000000  2.518893e+00     43319    54.9    4.04
+synack              0.0       0.000000  2.100352e+00     40142    54.9    5.79
+ackdat              0.0       0.000000  1.520884e+00     37708    54.9    5.62
+smean              28.0      73.000000  1.504000e+03      1357     0.0    3.73
+dmean               0.0      44.000000  1.458000e+03      1328    48.1    2.83
+trans_depth         0.0       0.000000  1.720000e+02        11    89.8  167.34
+response_body_len   0.0       0.000000  6.558056e+06      2386    93.6   76.34
+ct_srv_src          1.0       5.000000  6.300000e+01        52     0.0    1.52
+ct_state_ttl        0.0       1.000000  6.000000e+00         5    23.3    0.93
+ct_dst_ltm          1.0       2.000000  5.100000e+01        50     0.0    2.05
+ct_src_dport_ltm    1.0       1.000000  5.100000e+01        47     0.0    2.17
+ct_dst_sport_ltm    1.0       1.000000  4.600000e+01        32     0.0    1.70
+ct_dst_src_ltm      1.0       3.000000  6.500000e+01        54     0.0    1.56
+is_ftp_login        0.0       0.000000  4.000000e+00         4    98.5    9.94
+ct_ftp_cmd          0.0       0.000000  4.000000e+00         4    98.5    9.94
+ct_flw_http_mthd    0.0       0.000000  3.000000e+01        11    89.8   23.45
+ct_src_ltm          1.0       3.000000  6.000000e+01        50     0.0    1.84
+ct_srv_dst          1.0       4.000000  6.200000e+01        52     0.0    1.53
+is_sm_ips_ports     0.0       0.000000  1.000000e+00         2    98.4    7.78
+  [plot saved] plots/step01_class_distribution.png
+  [plot saved] plots/step01_id_leakage.png
+  [plot saved] plots/step01_skew_and_zeros.png
+  [plot saved] plots/step01_categoricals.png

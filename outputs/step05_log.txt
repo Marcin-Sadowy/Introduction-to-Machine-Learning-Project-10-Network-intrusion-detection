@@ -1,0 +1,101 @@
+
+================================================================================
+STEP 5 - Information Gain, Redundancy & Feature Engineering
+================================================================================
+-- 5a. Information Gain (MI_binary) across all 39 clean features --
+                   MI_binary  zero_%  P(attack|x>0)
+feature                                            
+sbytes               0.45139     0.0          0.488
+dbytes               0.41588    14.3          0.441
+sttl                 0.39683     0.6          0.491
+ct_state_ttl         0.38747    39.3          0.799
+dttl                 0.38341    14.3          0.442
+dmean                0.32544    14.3          0.441
+tcprtt               0.30365    25.3          0.502
+rate                 0.30179     0.5          0.490
+synack               0.29927    25.3          0.502
+ackdat               0.29737    25.3          0.502
+dinpkt               0.29499    14.3          0.441
+smean                0.28693     0.0          0.488
+dur                  0.27107     0.5          0.490
+dpkts                0.26441    14.3          0.441
+dload                0.25557    14.3          0.441
+sload                0.24178     0.5          0.490
+sinpkt               0.21998     0.0          0.488
+sjit                 0.20753    22.0          0.487
+djit                 0.17739    23.0          0.487
+spkts                0.16291     0.0          0.488
+dloss                0.15859    25.5          0.501
+ct_dst_ltm           0.14855     0.0          0.488
+ct_srv_dst           0.13059     0.0          0.488
+sloss                0.11844    24.7          0.498
+ct_src_ltm           0.11562     0.0          0.488
+ct_srv_src           0.09577     0.0          0.488
+state                0.09306     0.0          0.488
+ct_dst_src_ltm       0.06987     0.0          0.488
+response_body_len    0.05592    89.4          0.579
+service              0.05217     0.0          0.488
+ct_dst_sport_ltm     0.03797     0.0          0.488
+ct_src_dport_ltm     0.02261     0.0          0.488
+ct_flw_http_mthd     0.02249    83.1          0.709
+trans_depth          0.01928    83.1          0.709
+proto                0.01523     0.0          0.488
+is_sm_ips_ports      0.00360    99.5          0.000
+ct_ftp_cmd           0.00223    98.1          0.487
+dwin                 0.00115    25.3          0.502
+swin                 0.00068    24.7          0.498
+  [plot saved] plots/step05_ig_vs_conditional_attack.png
+
+-- 5b. Redundant numeric pairs (|Spearman rho| >= 0.90) --
+  feature_1    MI_1        feature_2    MI_2  spearman_rho
+trans_depth 0.01928 ct_flw_http_mthd 0.02249        0.9993
+     tcprtt 0.30365           synack 0.29927        0.9882
+       swin 0.00068             dwin 0.00115        0.9845
+     tcprtt 0.30365           ackdat 0.29737        0.9760
+      dpkts 0.26441           dbytes 0.41588        0.9627
+      dpkts 0.26441            dloss 0.15859        0.9620
+       rate 0.30179           sinpkt 0.21998       -0.9596
+      spkts 0.16291            sloss 0.11844        0.9544
+     dbytes 0.41588            dloss 0.15859        0.9444
+     synack 0.29927           ackdat 0.29737        0.9419
+     sinpkt 0.21998             sjit 0.20753        0.9376
+       rate 0.30179            sload 0.24178        0.9357
+      spkts 0.16291            dpkts 0.26441        0.9313
+      sload 0.24178           sinpkt 0.21998       -0.9161
+  [plot saved] plots/step05_spearman_redundancy.png
+
+-- 5c. Engineered features Information Gain --
+  engineered_feature  MI_binary
+    fe_mean_pkt_diff    0.47578
+   fe_byte_log_ratio    0.46723
+   fe_load_log_ratio    0.45952
+    fe_pkt_log_ratio    0.33067
+ fe_synack_rtt_share    0.26247
+    fe_sloss_per_pkt    0.23877
+    fe_dloss_per_pkt    0.20534
+    fe_jit_log_ratio    0.14295
+       fe_dport_conc    0.13926
+     fe_srv_src_conc    0.11139
+fe_iso_anomaly_score    0.05854
+     fe_app_activity    0.03357
+  [plot saved] plots/step05_engineered_ig.png
+
+-- 5d. Binary classification ablation (validation) --
+  logreg | 1_baseline_39_cols     | cols= 54 | F1=0.9067 AUC=0.9715 FAR=0.1348 RareRec=0.9376
+  hgb    | 1_baseline_39_cols     | cols= 54 | F1=0.9303 AUC=0.9857 FAR=0.0805 RareRec=0.8969
+  logreg | 2_drop_MI<0.05         | cols= 46 | F1=0.9060 AUC=0.9702 FAR=0.1365 RareRec=0.9305
+  hgb    | 2_drop_MI<0.05         | cols= 46 | F1=0.9309 AUC=0.9858 FAR=0.0804 RareRec=0.8801
+  logreg | 3_drop_redundant       | cols= 48 | F1=0.9053 AUC=0.9706 FAR=0.1372 RareRec=0.9281
+  hgb    | 3_drop_redundant       | cols= 48 | F1=0.9310 AUC=0.9859 FAR=0.0801 RareRec=0.8897
+  logreg | 4_baseline_+_FE        | cols= 66 | F1=0.9079 AUC=0.9720 FAR=0.1287 RareRec=0.9353
+  hgb    | 4_baseline_+_FE        | cols= 66 | F1=0.9289 AUC=0.9857 FAR=0.0819 RareRec=0.8969
+  logreg | 5_FE_minus_redundant   | cols= 60 | F1=0.9072 AUC=0.9718 FAR=0.1291 RareRec=0.9305
+  hgb    | 5_FE_minus_redundant   | cols= 60 | F1=0.9288 AUC=0.9852 FAR=0.0830 RareRec=0.9017
+  logreg | 6_no_TTL_+_FE          | cols= 63 | F1=0.8960 AUC=0.9593 FAR=0.1454 RareRec=0.9496
+  hgb    | 6_no_TTL_+_FE          | cols= 63 | F1=0.9296 AUC=0.9853 FAR=0.0816 RareRec=0.8969
+  [plot saved] plots/step05_binary_ablation_val.png
+
+-- 5e. Exporting engineered datasets to dataset/ --
+  [dataset saved] dataset/UNSW_NB15_engineered_train.csv   shape=(80832, 53)
+  [dataset saved] dataset/UNSW_NB15_engineered_val.csv     shape=(20208, 53)
+  [dataset saved] dataset/UNSW_NB15_engineered_test.csv    shape=(82332, 53)
