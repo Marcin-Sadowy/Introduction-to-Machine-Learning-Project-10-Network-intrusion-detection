@@ -1,8 +1,8 @@
 """
-ig_analysis.py — Information Gain check for UNSW-NB15
-=====================================================
+preprocessing/02_information_gain_analysis.py — Information Gain check
+======================================================================
 
-Run:    python ig_analysis.py
+Run:    python preprocessing/02_information_gain_analysis.py
 Output: outputs/ig_analysis_log.txt
         plots/ig_analysis_global_vs_active.png
         plots/ig_analysis_correlation_before_after.png
@@ -34,7 +34,7 @@ pd.set_option("display.width", 180)
 pd.set_option("display.max_columns", 60)
 pd.set_option("display.max_rows", 120)
 
-ROOT         = os.path.dirname(os.path.abspath(__file__))
+ROOT         = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR     = os.path.join(ROOT, "dataset") if os.path.exists(os.path.join(ROOT, "dataset", "UNSW_NB15_training-set.csv")) \
                else os.path.join(ROOT, "orange", "dataset")
 TRAIN_CSV    = os.path.join(DATA_DIR, "UNSW_NB15_training-set.csv")

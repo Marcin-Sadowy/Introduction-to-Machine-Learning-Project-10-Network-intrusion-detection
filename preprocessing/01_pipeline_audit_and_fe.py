@@ -1,12 +1,12 @@
 """
-script.py — UNSW-NB15 Preprocessing & Feature Engineering
-=========================================================
+preprocessing/01_pipeline_audit_and_fe.py — UNSW-NB15 Preprocessing & FE
+========================================================================
 
-Run:    python script.py            (runs steps listed in RUN_STEPS)
-        python script.py 1 2 3      (runs specific steps)
-        python script.py all        (runs all steps 1..5)
-        python script.py report     (rebuilds combined PDF only)
-        python script.py clean      (wipes temp cache & __pycache__)
+Run:    python preprocessing/01_pipeline_audit_and_fe.py        (runs RUN_STEPS)
+        python preprocessing/01_pipeline_audit_and_fe.py 1 2 3  (specific steps)
+        python preprocessing/01_pipeline_audit_and_fe.py all    (steps 1..5)
+        python preprocessing/01_pipeline_audit_and_fe.py report (rebuild PDF)
+        python preprocessing/01_pipeline_audit_and_fe.py clean  (wipe cache)
 
 Saves logs to outputs/, plots to plots/, and final engineered CSVs to dataset/.
 """
@@ -44,7 +44,7 @@ pd.set_option("display.width", 180)
 pd.set_option("display.max_columns", 60)
 pd.set_option("display.max_rows", 120)
 
-ROOT         = os.path.dirname(os.path.abspath(__file__))
+ROOT         = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EXPORT_DIR   = os.path.join(ROOT, "dataset")
 DATA_DIR     = EXPORT_DIR if os.path.exists(os.path.join(EXPORT_DIR, "UNSW_NB15_training-set.csv")) \
                else os.path.join(ROOT, "orange", "dataset")

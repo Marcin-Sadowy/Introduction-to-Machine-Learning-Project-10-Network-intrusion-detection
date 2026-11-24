@@ -1,6 +1,6 @@
 # Information Gain (IG) & Preprocessing Notes — What We Changed and Why
 
-This is a straightforward write-up of the preprocessing steps we finalized in `script.py` and `ig_analysis.py`, why we re-ran Information Gain (`mutual_info_classif`), and what changed compared to the first notebook pass.
+This is a straightforward write-up of the preprocessing steps we finalized in `preprocessing/01_pipeline_audit_and_fe.py` and `preprocessing/02_information_gain_analysis.py`, why we re-ran Information Gain (`mutual_info_classif`), and what changed compared to the first notebook pass.
 
 ---
 
@@ -31,7 +31,7 @@ In the earlier notebook, we ran `mutual_info_classif` on raw merged data and dro
 - Applied `np.log1p(x) = log(1 + x)` to the **30 positive continuous/count features** with `|skew| > 1` (`sbytes`, `dbytes`, `dur`, `rate`, `sload`, `dload`, `spkts`, `dpkts`, `trans_depth`, `response_body_len`, etc.).
 - Why `log1p` instead of plain `log` or IQR outlier deletion:
   - Keeps `0 -> 0` (critical since many network columns are zero-inflated).
-  - Pulls skewness down from `30–124` to `~0.1–2.7` so `StandardScaler`, linear models, Autoencoders, and continuous MI behave properly.
+  - Pulls skewness down from `30–124` to `~0.1–2.7` on most continuous features (a few sparse count columns like `ct_ftp_cmd` at `7.25` and `ct_dst_sport_ltm` at `5.21` remain higher), so `StandardScaler`, linear models, Autoencoders, and continuous MI behave properly.
   - Preserves extreme attack flows instead of deleting them.
 - **Skipped `log1p`** on binary flags (`is_sm_ips_ports`) and discrete code-like columns (`sttl`, `dttl`, `swin`, `dwin`, `ct_state_ttl`).
 

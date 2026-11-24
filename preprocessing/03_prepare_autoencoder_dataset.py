@@ -1,8 +1,8 @@
 """
-prepare_autoencoder_data.py — Final Dataset Builder for Autoencoder Modeling
-============================================================================
+preprocessing/03_prepare_autoencoder_dataset.py — Final Dataset Builder
+=======================================================================
 
-Run:    python prepare_autoencoder_data.py
+Run:    python preprocessing/03_prepare_autoencoder_dataset.py
 Output: dataset/autoencoder_ready/
             X_train_normal.csv      (Normal-only rows for Autoencoder training)
             X_train_all.csv         (Full clean train features)
@@ -32,7 +32,7 @@ warnings.filterwarnings("ignore")
 pd.set_option("display.width", 180)
 pd.set_option("display.max_columns", 60)
 
-ROOT         = os.path.dirname(os.path.abspath(__file__))
+ROOT         = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATASET_DIR  = os.path.join(ROOT, "dataset")
 DATA_DIR     = DATASET_DIR if os.path.exists(os.path.join(DATASET_DIR, "UNSW_NB15_training-set.csv")) \
                else os.path.join(ROOT, "orange", "dataset")
