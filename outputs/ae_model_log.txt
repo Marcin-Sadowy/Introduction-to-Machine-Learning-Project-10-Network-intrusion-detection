@@ -1,0 +1,70 @@
+================================================================================
+AUTOENCODER — TRAINING & EVALUATION
+================================================================================
+Loaded splits: X_train_normal=(41368, 55) | X_val=(20208, 55) | X_test=(82332, 55)
+
+Architecture: 55 -> 32 -> 12 -> 32 -> 55 (tanh + linear)
+
+Training on Normal traffic only:
+  Epoch  1/100 | train_mse=0.54272 | val_normal_mse=0.35619
+  Epoch  5/100 | train_mse=0.13425 | val_normal_mse=0.12802
+  Epoch 10/100 | train_mse=0.08660 | val_normal_mse=0.08807
+  Epoch 15/100 | train_mse=0.07172 | val_normal_mse=0.07344
+  Epoch 20/100 | train_mse=0.05922 | val_normal_mse=0.06061
+  Epoch 25/100 | train_mse=0.04923 | val_normal_mse=0.05056
+  Epoch 30/100 | train_mse=0.04218 | val_normal_mse=0.04346
+  Epoch 35/100 | train_mse=0.03708 | val_normal_mse=0.03864
+  Epoch 40/100 | train_mse=0.03337 | val_normal_mse=0.03498
+  Epoch 45/100 | train_mse=0.03055 | val_normal_mse=0.03221
+  Epoch 50/100 | train_mse=0.02830 | val_normal_mse=0.02981
+  Epoch 55/100 | train_mse=0.02641 | val_normal_mse=0.02790
+  Epoch 60/100 | train_mse=0.02487 | val_normal_mse=0.02630
+  Epoch 65/100 | train_mse=0.02366 | val_normal_mse=0.02499
+  Epoch 70/100 | train_mse=0.02266 | val_normal_mse=0.02403
+  Epoch 75/100 | train_mse=0.02186 | val_normal_mse=0.02310
+  Epoch 80/100 | train_mse=0.02116 | val_normal_mse=0.02245
+  Epoch 85/100 | train_mse=0.02055 | val_normal_mse=0.02174
+  Epoch 90/100 | train_mse=0.02003 | val_normal_mse=0.02115
+  Epoch 95/100 | train_mse=0.01962 | val_normal_mse=0.02074
+  Epoch 100/100 | train_mse=0.01916 | val_normal_mse=0.02032
+Training finished in 14.9s (best val_normal_mse=0.02032)
+
+── Validation Results (cutoff: error >= 0.01745 => Attack) ──
+  ROC-AUC (overall separation) : 0.8488   (0.50=random, 1.00=perfect)
+  Binary F1 (precision/recall) : 0.7573
+  Precision (alert accuracy)   : 71.7%
+  Attack Recall (caught)       : 80.2%   (7,915 caught / 1,951 missed)
+  False Alarm Rate (FAR)       : 30.2%   (3,121 false alerts / 7,221 ok)
+  Breakdown by traffic type (% flagged as Attack):
+    Analysis         (n=    94): 96.8%  <- Caught (higher is better)
+    Backdoor         (n=    83): 90.4%  <- Caught (higher is better)
+    DoS              (n=   602): 94.9%  <- Caught (higher is better)
+    Exploits         (n= 3,865): 97.2%  <- Caught (higher is better)
+    Fuzzers          (n= 2,958): 49.3%  <- Caught (higher is better)
+    Generic          (n=   781): 99.7%  <- Caught (higher is better)
+    Normal           (n=10,342): 30.2%  <- False Alarm (lower is better)
+    Reconnaissance   (n= 1,243): 80.4%  <- Caught (higher is better)
+    Shellcode        (n=   217): 74.7%  <- Caught (higher is better)
+    Worms            (n=    23): 100.0%  <- Caught (higher is better)
+
+── Official Test Results (cutoff: error >= 0.01745 => Attack) ──
+  ROC-AUC (overall separation) : 0.9173   (0.50=random, 1.00=perfect)
+  Binary F1 (precision/recall) : 0.8359
+  Precision (alert accuracy)   : 74.8%
+  Attack Recall (caught)       : 94.8%   (42,960 caught / 2,372 missed)
+  False Alarm Rate (FAR)       : 39.2%   (14,501 false alerts / 22,499 ok)
+  Breakdown by traffic type (% flagged as Attack):
+    Analysis         (n=   677): 100.0%  <- Caught (higher is better)
+    Backdoor         (n=   583): 98.6%  <- Caught (higher is better)
+    DoS              (n= 4,089): 98.7%  <- Caught (higher is better)
+    Exploits         (n=11,132): 98.3%  <- Caught (higher is better)
+    Fuzzers          (n= 6,062): 75.1%  <- Caught (higher is better)
+    Generic          (n=18,871): 99.8%  <- Caught (higher is better)
+    Normal           (n=37,000): 39.2%  <- False Alarm (lower is better)
+    Reconnaissance   (n= 3,496): 86.7%  <- Caught (higher is better)
+    Shellcode        (n=   378): 70.6%  <- Caught (higher is better)
+    Worms            (n=    44): 97.7%  <- Caught (higher is better)
+
+  [saved] outputs/ae_weights.npz
+  [plot saved] plots/ae_training_curve.png
+  [plot saved] plots/ae_error_and_eval.png
